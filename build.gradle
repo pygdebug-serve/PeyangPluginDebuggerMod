@@ -122,6 +122,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation files("libs/")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
