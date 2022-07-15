@@ -1,8 +1,10 @@
 package tokyo.peya.mod.peyangplugindebuggermod;
 
-import tokyo.peya.plugin.peyangplugindebugger.networking.OutgoingMessage;
+import tokyo.peya.lib.pygdebug.common.PacketBase;
 
 public interface PacketHandler
 {
-    void handlePacket(byte id, OutgoingMessage packet);
+    void registerPackets(PacketIO channel);
+
+    void handlePacket(byte id, PacketBase packet);
 }

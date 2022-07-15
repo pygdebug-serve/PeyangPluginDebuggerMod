@@ -1,14 +1,16 @@
 package tokyo.peya.mod.peyangplugindebuggermod;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
-import tokyo.peya.plugin.peyangplugindebugger.networking.OutgoingMessage;
+import tokyo.peya.lib.pygdebug.common.PacketBase;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ public class PacketIO
 {
     private static final ObjectMapper MAPPER;
 
+    private static final ObjectWriter WRITER;
+
     private final SimpleChannel channel;
     private final PeyangPluginDebuggerMod mod;
     private final String name;
@@ -27,6 +31,9 @@ public class PacketIO
 
     static {
         MAPPER = new ObjectMapper(new MessagePackFactory());
+
+        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        WRITER = MAPPER.writer().withoutAttribute("id");
     }
 
     public PacketIO(PeyangPluginDebuggerMod mod, String name)
@@ -34,21 +41,21 @@ public class PacketIO
         this.mod = mod;
         this.name = name;
 
-        this.channel = NetworkRegistry.ChannelBuilder
-                .named(new ResourceLocation(PeyangPluginDebuggerMod.NAMESPACE_ROOT, name))
-                .clientAcceptedVersions(version -> true)
-                .serverAcceptedVersions(version -> true)
-                .networkProtocolVersion(() -> "1")
-                .simpleChannel();
+        this.channel = NetworkRegistry.newSimpleChannel(
+                new ResourceLocation(PeyangPluginDebuggerMod.NAMESPACE_ROOT, name),
+                () -> "1",
+                s -> true,
+                s -> true
+        );
 
         this.handlers = new ArrayList<>();
     }
 
-    private void encode(OutgoingMessage message, PacketBuffer buffer)
+    private void encode(PacketBase message, PacketBuffer buffer)
     {
         try
         {
-            buffer.writeBytes(MAPPER.writeValueAsBytes(message));
+            buffer.writeBytes(WRITER.writeValueAsBytes(message));
         }
         catch (IOException e)
         {
@@ -56,7 +63,7 @@ public class PacketIO
         }
     }
 
-    private <T extends OutgoingMessage> T decode(PacketBuffer buffer)
+    private <T extends PacketBase> T decode(PacketBuffer buffer)
     {
         try
         {
@@ -72,7 +79,7 @@ public class PacketIO
         }
     }
 
-    private <T extends OutgoingMessage> void handle(T message, Supplier<? extends NetworkEvent.Context> ctx)
+    private <T extends PacketBase> void handle(T message, Supplier<? extends NetworkEvent.Context> ctx)
     {
         ctx.get().setPacketHandled(true);
 
@@ -88,20 +95,31 @@ public class PacketIO
         });
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends OutgoingMessage> void registerPacket(T message)
+    public void registerPacket(byte id, Class<? extends PacketBase> packetType)
     {
         this.channel.registerMessage(
-                message.getId(),
-                (Class<T> ) new TypeReference<T>(){}.getType(),
+                id,
+                packetType,
                 this::encode,
                 this::decode,
                 this::handle
                 );
     }
 
+    public void registerPacket(PacketBase packet)
+    {
+        this.registerPacket(packet.getId(), packet.getClass());
+    }
+
     public void registerHandler(PacketHandler handler)
     {
         this.handlers.add(handler);
+
+        handler.registerPackets(this);
+    }
+
+    public void sendPacket(PacketBase message)
+    {
+        this.channel.sendToServer(message);
     }
 }
