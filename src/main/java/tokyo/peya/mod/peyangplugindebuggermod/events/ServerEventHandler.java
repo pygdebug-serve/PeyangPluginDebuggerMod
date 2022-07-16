@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import tokyo.peya.lib.pygdebug.common.packets.main.PacketInformationRequest;
 import tokyo.peya.mod.peyangplugindebuggermod.PeyangPluginDebuggerMod;
@@ -29,10 +28,26 @@ public class ServerEventHandler
         if (event.getEntity().getUniqueID() != self)
             return;
 
-        PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
-                new PacketInformationRequest(PacketInformationRequest.Action.PLATFORM));
-        PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
-                new PacketInformationRequest(PacketInformationRequest.Action.SERVER_STATUS));
+        // Send packet after 2 seconds
+        // Because Forge doesn't know networking.
 
+        // When I send packet on login phase, it doesn't work.
+        // So I send packet after 2 seconds.
+        new Thread(() ->
+        {
+            try
+            {
+                Thread.sleep(2000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+
+            PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
+                    new PacketInformationRequest(PacketInformationRequest.Action.PLATFORM));
+            PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
+                    new PacketInformationRequest(PacketInformationRequest.Action.SERVER_STATUS));
+        }).start();
     }
 }

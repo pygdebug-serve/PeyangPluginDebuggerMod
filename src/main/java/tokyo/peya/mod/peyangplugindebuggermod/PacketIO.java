@@ -1,6 +1,5 @@
 package tokyo.peya.mod.peyangplugindebuggermod;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -14,6 +13,7 @@ import tokyo.peya.lib.pygdebug.common.PacketBase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -28,6 +28,8 @@ public class PacketIO
     private final String name;
 
     private final List<PacketHandler> handlers;
+
+    private final HashMap<Byte, Class<? extends PacketBase>> classCaches;
 
     static {
         MAPPER = new ObjectMapper(new MessagePackFactory());
@@ -49,6 +51,8 @@ public class PacketIO
         );
 
         this.handlers = new ArrayList<>();
+
+        this.classCaches = new HashMap<>();
     }
 
     private void encode(PacketBase message, PacketBuffer buffer)
@@ -63,14 +67,20 @@ public class PacketIO
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends PacketBase> T decode(PacketBuffer buffer)
     {
         try
         {
-            byte[] data = new byte[buffer.readableBytes() - 1];
-            System.arraycopy(buffer.array(), 0, data, 0, data.length - 1);
+            byte[] data = new byte[buffer.readableBytes()];
+            buffer.getBytes(0, data);
+            byte[] newData = new byte[data.length - 1];
 
-            return MAPPER.readValue(data, new TypeReference<T>(){});
+            System.arraycopy(data, 1, newData, 0, data.length - 1);
+
+            Class<?> clazz = this.classCaches.get(data[0]);
+
+            return (T) MAPPER.readValue(newData, clazz);
         }
         catch (IOException e)
         {
@@ -104,9 +114,11 @@ public class PacketIO
                 this::decode,
                 this::handle
                 );
+
+        this.classCaches.put(id, packetType);
     }
 
-    public void registerPacket(PacketBase packet)
+    public <T extends PacketBase> void registerPacket(T packet)
     {
         this.registerPacket(packet.getId(), packet.getClass());
     }
