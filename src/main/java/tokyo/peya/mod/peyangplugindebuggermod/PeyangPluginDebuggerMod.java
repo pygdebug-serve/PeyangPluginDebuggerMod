@@ -10,7 +10,7 @@ public class PeyangPluginDebuggerMod
 {
     public static PeyangPluginDebuggerMod INSTANCE;
 
-    public static final String NAMESPACE_ROOT = "pydebug";
+    public static final String NAMESPACE_ROOT = "pygdebug";
 
     public final PacketIO mainChannel;
 
