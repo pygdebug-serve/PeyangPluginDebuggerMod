@@ -6,29 +6,22 @@ import tokyo.peya.lib.pygdebug.common.packets.main.PacketPlatformInformation;
 import tokyo.peya.lib.pygdebug.common.packets.main.PacketServerStatus;
 import tokyo.peya.mod.peyangplugindebuggermod.PacketHandler;
 import tokyo.peya.mod.peyangplugindebuggermod.PacketIO;
+import tokyo.peya.mod.peyangplugindebuggermod.Utils;
 
 public class PacketInformationHandler implements PacketHandler
 {
-    private static final PacketPlatformInformation EMPTY_PLATFORM_INFORMATION;
-    private static final PacketServerStatus EMPTY_SERVER_STATUS;
-
-    static {
-        EMPTY_PLATFORM_INFORMATION = PacketPlatformInformation.builder().build();
-        EMPTY_SERVER_STATUS = PacketServerStatus.builder().build();
-    }
-
     @Override
     public void registerPackets(PacketIO channel)
     {
-        channel.registerPacket(new PacketInformationRequest(PacketInformationRequest.Action.PLATFORM));
-        channel.registerPacket(EMPTY_PLATFORM_INFORMATION);
-        channel.registerPacket(EMPTY_SERVER_STATUS);
+        channel.registerPacket(PacketInformationRequest.class);
+        channel.registerPacket(PacketPlatformInformation.class);
+        channel.registerPacket(PacketServerStatus.class);
     }
 
     @Override
     public void handlePacket(byte id, PacketBase packet)
     {
-        if (id == EMPTY_PLATFORM_INFORMATION.getId())
+        if (id == Utils.getPacketId(PacketPlatformInformation.class))
         {
             PacketPlatformInformation platformInformation = (PacketPlatformInformation) packet;
             System.out.println("PacketPlatformInformation received");
@@ -51,7 +44,7 @@ public class PacketInformationHandler implements PacketHandler
             System.out.println("  onlineMode: " + platformInformation.getServer().isOnlineMode());
 
         }
-        else if (id == EMPTY_SERVER_STATUS.getId())
+        else if (id == Utils.getPacketId(PacketServerStatus.class))
         {
             PacketServerStatus serverStatus = (PacketServerStatus) packet;
             System.out.println("PacketServerStatus received");

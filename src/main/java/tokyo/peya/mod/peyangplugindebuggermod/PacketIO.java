@@ -96,7 +96,7 @@ public class PacketIO
         this.handlers.forEach(handler -> {
             try
             {
-                handler.handlePacket(message.getId(), message);
+                handler.handlePacket(Utils.getPacketId(message), message);
             }
             catch (Exception e)
             {
@@ -118,9 +118,9 @@ public class PacketIO
         this.classCaches.put(id, packetType);
     }
 
-    public <T extends PacketBase> void registerPacket(T packet)
+    public void registerPacket(Class<? extends PacketBase> packet)
     {
-        this.registerPacket(packet.getId(), packet.getClass());
+        this.registerPacket(Utils.getPacketId(packet), packet);
     }
 
     public void registerHandler(PacketHandler handler)
