@@ -22,12 +22,20 @@ public class PacketPygDebugAvailableHandler implements PacketHandler
         if (id != Utils.getPacketId(PacketPygDebugAvailable.class))
             return;
 
+
+        System.out.println("Server has PygDebugger(ping received).");
+        System.out.println("Sending pong packet.");
         PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
                 new PacketPygDebugAvailable()
         );
+
+        System.out.println("Attempting to get platform information.");
         PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
                 new PacketInformationRequest(PacketInformationRequest.Action.PLATFORM));
+        System.out.println("Attempting to get server status.");
         PeyangPluginDebuggerMod.INSTANCE.mainChannel.sendPacket(
                 new PacketInformationRequest(PacketInformationRequest.Action.SERVER_STATUS));
+
+        PeyangPluginDebuggerMod.INSTANCE.debugger.serverReady();
     }
 }

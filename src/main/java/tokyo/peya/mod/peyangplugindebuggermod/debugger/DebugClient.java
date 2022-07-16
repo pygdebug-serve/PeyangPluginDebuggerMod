@@ -17,6 +17,7 @@ public class DebugClient
 
     private void requestFetchDebuggerOption()
     {
+        System.out.println("Fetching debugger option...");
         this.debugChannel.sendPacket(new PacketDebugOptionRequest());
     }
 
@@ -29,7 +30,11 @@ public class DebugClient
     {
         this.debuggerOption = debuggerOption;
 
-        // TODO: add updated evt handler
+        System.out.println("Debugger option is set.");
     }
 
+    public void serverReady()
+    {
+        this.requestFetchDebuggerOption();
+    }
 }

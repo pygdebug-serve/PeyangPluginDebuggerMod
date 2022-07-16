@@ -18,7 +18,7 @@ public class PeyangPluginDebuggerMod
     public final PacketIO mainChannel;
 
     public final PacketIO debugChannel;
-    private final DebugClient client;
+    public final DebugClient debugger;
 
     public PeyangPluginDebuggerMod()
     {
@@ -32,8 +32,8 @@ public class PeyangPluginDebuggerMod
         this.mainChannel.registerHandler(new PacketPygDebugAvailableHandler());
 
         this.debugChannel = new PacketIO(this, "debug");
-        this.client = new DebugClient(this.debugChannel);
+        this.debugger = new DebugClient(this.debugChannel);
 
-        this.debugChannel.registerHandler(new DebuggerGeneralHandler(this.client));
+        this.debugChannel.registerHandler(new DebuggerGeneralHandler(this.debugger));
     }
 }

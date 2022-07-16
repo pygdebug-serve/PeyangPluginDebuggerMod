@@ -128,7 +128,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
-    implementation 'com.github.pygdebug-serve:Common:2b6bf9af1b'
+    implementation 'com.github.pygdebug-serve:Common:c7d7a427c1'
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
