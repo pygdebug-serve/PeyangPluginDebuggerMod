@@ -129,6 +129,9 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
     implementation 'com.github.pygdebug-serve:Common:c7d7a427c1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

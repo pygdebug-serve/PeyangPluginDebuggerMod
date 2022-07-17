@@ -1,6 +1,8 @@
 package tokyo.peya.mod.peyangplugindebuggermod;
 
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import tokyo.peya.mod.peyangplugindebuggermod.debugger.DebugClient;
 import tokyo.peya.mod.peyangplugindebuggermod.events.ServerEventHandler;
@@ -20,20 +22,34 @@ public class PeyangPluginDebuggerMod
     public final PacketIO debugChannel;
     public final DebugClient debugger;
 
+    private final DebuggerUI debuggerUI;
+
     public PeyangPluginDebuggerMod()
     {
         INSTANCE = this;
 
         MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
+        MinecraftForge.EVENT_BUS.register(this);
 
         this.mainChannel = new PacketIO(this, "main");
-
-        this.mainChannel.registerHandler(new PacketInformationHandler());
-        this.mainChannel.registerHandler(new PacketPygDebugAvailableHandler());
 
         this.debugChannel = new PacketIO(this, "debug");
         this.debugger = new DebugClient(this.debugChannel);
 
+        this.mainChannel.registerHandler(new PacketInformationHandler(this.debugger));
+        this.mainChannel.registerHandler(new PacketPygDebugAvailableHandler());
+
         this.debugChannel.registerHandler(new DebuggerGeneralHandler(this.debugger));
+
+        this.debuggerUI = new DebuggerUI(this.debugger);
+    }
+
+    @SubscribeEvent
+    public void onRender(RenderGameOverlayEvent.Post event)
+    {
+        if (event.getType() != RenderGameOverlayEvent.ElementType.CROSSHAIRS)
+            return;
+
+        this.debuggerUI.render(event.getMatrixStack());
     }
 }
