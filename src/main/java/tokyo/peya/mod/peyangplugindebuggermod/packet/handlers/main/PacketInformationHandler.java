@@ -30,18 +30,8 @@ public class PacketInformationHandler implements PacketHandler
     public void handlePacket(byte id, PacketBase packet)
     {
         if (id == Utils.getPacketId(PacketPlatformInformation.class))
-        {
-            PacketPlatformInformation platformInformation = (PacketPlatformInformation) packet;
-            System.out.println("PlatformInformation received.");
-
-            this.client.setPlatformInformation(platformInformation);
-        }
+            this.client.setPlatformInformation((PacketPlatformInformation) packet);
         else if (id == Utils.getPacketId(PacketServerStatus.class))
-        {
-            PacketServerStatus serverStatus = (PacketServerStatus) packet;
-            System.out.println("PacketServerStatus received.");
-
-            this.client.setServerStatus(serverStatus);
-        }
+            this.client.setServerStatus((PacketServerStatus) packet);
     }
 }

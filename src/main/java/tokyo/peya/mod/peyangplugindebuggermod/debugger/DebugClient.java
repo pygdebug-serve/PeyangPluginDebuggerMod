@@ -41,11 +41,6 @@ public class DebugClient
         this.debugChannel.sendPacket(new PacketDebugOptionRequest());
     }
 
-    private void pollServerInformation(PacketInformationRequest.Action type)
-    {
-        this.debugChannel.sendPacket(new PacketInformationRequest(PacketInformationRequest.Action.PLATFORM));
-    }
-
     public void serverReady()
     {
         this.requestFetchDebuggerOption();
