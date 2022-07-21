@@ -20,6 +20,7 @@ import tokyo.peya.mod.peyangplugindebuggermod.ui.GUIManager;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.HorizontalAlign;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.Palette;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.Text;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.TitledGUIBox;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.VerticalAlign;
 
 @Mod("peyangplugindebuggermod")
@@ -72,7 +73,8 @@ public class PeyangPluginDebuggerMod
     private void initGUI()
     {
 
-        GUIBox box = new GUIBox(this.guiManager)
+        GUIBox box = new TitledGUIBox(this.guiManager)
+                .title("Title")
                 .x(20)
                 .y(20)
                 .width(40)

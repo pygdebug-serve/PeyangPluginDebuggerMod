@@ -32,9 +32,9 @@ public class GUIBox implements IOverlay
     private int width;
     private int height;
 
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PROTECTED)
     private int absoluteTop;
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PROTECTED)
     private int absoluteLeft;
 
     private int color;
