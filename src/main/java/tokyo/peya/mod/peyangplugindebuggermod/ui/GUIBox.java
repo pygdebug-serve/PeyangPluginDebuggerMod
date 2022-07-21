@@ -3,132 +3,151 @@ package tokyo.peya.mod.peyangplugindebuggermod.ui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Singular;
-import lombok.Value;
+import lombok.experimental.Accessors;
+import net.java.games.input.Mouse;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Data
-@Builder
+@Accessors(fluent = true, chain = true)
+@AllArgsConstructor
 public class GUIBox implements IOverlay
 {
-    @Singular
-    private final List<GUIBox> children = new LinkedList<>();
+    private final GUIManager guiManager;
 
-    @Singular("onClick")
-    private final List<Consumer<MouseContext>> onClickListeners = new ArrayList<>();
+    private final List<GUIBox> children;
 
-    @Singular("onHover")
-    private final List<Consumer<MouseContext>> onHoverListeners = new ArrayList<>();
+    private final List<Consumer<MouseContext>> onClickListeners;
 
-    private int top;
-    private int left;
-    private int right;
-    private int bottom;
+    private final List<Consumer<MouseContext>> onHoverListeners;
 
+    private int y;
+    private int x;
+    private int width;
+    private int height;
+
+    @Getter(AccessLevel.NONE)
     private int absoluteTop;
+    @Getter(AccessLevel.NONE)
     private int absoluteLeft;
 
     private int color;
 
-    @Getter(AccessLevel.PROTECTED)
-    private Supplier<Text> text;
+    private Text text;
 
     private boolean visible;
 
     private boolean transparent;
 
-    public GUIBox()
+    @Setter(AccessLevel.PRIVATE)
+    private VerticalAlign verticalAlign;
+    @Setter(AccessLevel.PRIVATE)
+    private HorizontalAlign horizontalAlign;
+
+    public GUIBox(GUIManager manager, GUIBox source)
     {
+        this(manager, source.children, source.onClickListeners, source.onHoverListeners, source.y, source.x, source.width,
+                source.height, source.absoluteTop, source.absoluteLeft, source.color, source.text, source.visible,
+                source.transparent, source.verticalAlign, source.horizontalAlign
+        );
     }
 
-    public GUIBox(int top, int left, int right, int bottom, int absoluteTop, int absoluteLeft, int color, Supplier<Text> text, boolean visible, boolean transparent)
+    public GUIBox(GUIManager manager)
     {
-        this.top = top;
-        this.left = left;
-        this.right = right;
-        this.bottom = bottom;
-        this.absoluteTop = absoluteTop;
-        this.absoluteLeft = absoluteLeft;
-        this.color = color;
-        this.text = text;
-        this.visible = visible;
-        this.transparent = transparent;
+        this(manager, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0, 0, 0,
+                0, 0, 0, -1946157056, null, true, false,
+                VerticalAlign.TOP, HorizontalAlign.LEFT);
     }
 
-    public GUIBox(GUIBox source)
+    @Override
+    public void onClicked(MouseContext context)
     {
-        this.top = source.top;
-        this.left = source.left;
-        this.right = source.right;
-        this.bottom = source.bottom;
-        this.absoluteTop = source.absoluteTop;
-        this.absoluteLeft = source.absoluteLeft;
-        this.color = source.color;
-        this.text = source.text;
-        this.visible = source.visible;
-        this.transparent = source.transparent;
-    }
-
-    public void onClick(int parentX, int parentY, int button)
-    {
-        int x = parentX - this.left;
-        int y = parentY - this.top;
-
-        if (this.isMouseOver(parentX, parentY))
-            this.onClickListeners.forEach(listener -> listener.accept(new MouseContext(this, x, y, button)));
+        this.onClickListeners.forEach(listener -> listener.accept(context));
 
         this.children.forEach(child -> {
-            if (child.visible)
-                child.onClick(parentX, parentY, button);
-        });
-    }
+            int mouseX = context.getRelativeX() - child.getX();
+            int mouseY = context.getRelativeY() - child.getY();
 
-    public void onHover(int parentX, int parentY)
-    {
-        int x = parentX - this.left;
-        int y = parentY - this.top;
+            MouseContext childContext = new MouseContext(this , mouseX, mouseY, context.getWheel(),
+                    context.isLeftClicking(), context.isRightClicking(), context.isMiddleClicking());
 
-        if (this.isMouseOver(parentX, parentY))
-            this.onHoverListeners.forEach(listener -> listener.accept(new MouseContext(this, x, y, -1)));
-
-        this.children.forEach(child -> {
-            if (child.visible)
-                child.onHover(parentX, parentY);
+            child.onClicked(childContext);
         });
     }
 
     private boolean isMouseOver(int x, int y)
     {
-        return x >= this.left && x <= this.right && y >= this.top && y <= this.bottom;
+        return x >= this.x && x <= this.width && y >= this.y && y <= this.height;
     }
 
-    public void render(MatrixStack matrixStack, int x, int y)
+    @Override
+    public int getX()
+    {
+        return this.x;
+    }
+
+    @Override
+    public int getY()
+    {
+        return this.y;
+    }
+
+    @Override
+    public int getWidth()
+    {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight()
+    {
+        return this.height;
+    }
+
+    @Override
+    public void render(MatrixStack matrixStack, int parentX, int parentWidth, int parentY, int parentHeight)
     {
         if (!this.visible)
             return;
 
-        this.absoluteTop = y + this.top;
-        this.absoluteLeft = x + this.left;
+        HorizontalAlign horizontalAlign = this.horizontalAlign;
+        VerticalAlign verticalAlign = this.verticalAlign;
+
+        if (horizontalAlign == HorizontalAlign.LEFT)
+            this.absoluteLeft = parentX + this.x;
+        else if (horizontalAlign == HorizontalAlign.CENTER)
+            this.absoluteLeft = parentX + this.x + this.width / 2;
+        else if (horizontalAlign == HorizontalAlign.RIGHT)
+            this.absoluteLeft = parentX + this.x + this.width;
+        else
+            this.absoluteLeft = parentX + this.x;
+
+        if (verticalAlign == VerticalAlign.TOP)
+            this.absoluteTop = parentY + this.y;
+        else if (verticalAlign == VerticalAlign.CENTER)
+            this.absoluteTop = parentY + this.y + this.height / 2;
+        else if (verticalAlign == VerticalAlign.BOTTOM)
+            this.absoluteTop = parentY + this.y + this.height;
+        else
+            this.absoluteTop = parentY + this.y;
 
         if (!this.transparent)
-            Palette.drawRect(matrixStack, this.absoluteLeft, this.absoluteTop, this.right - this.left, this.bottom - this.top, this.color);
+            Palette.drawRect(matrixStack, this.absoluteLeft, this.absoluteTop, this.width,
+                    this.height, this.color);
 
         if (this.text != null)
         {
-            Text text = this.text.get();
+            Text text = this.text;
 
-            int textX = text.getAbsoluteX(this.absoluteLeft, this.right - this.left);
-            int textY = text.getAbsoluteY(this.absoluteTop, this.bottom - this.top);
+            int textX = text.getAbsoluteX(this.absoluteLeft, this.width);
+            int textY = text.getAbsoluteY(this.absoluteTop, this.height);
+
 
             if (text.isShadow())
                 Palette.drawTextShadow(matrixStack, text.getText(), textX, textY, text.getColor());
@@ -136,35 +155,58 @@ public class GUIBox implements IOverlay
                 Palette.drawText(matrixStack, text.getText(), textX, textY, text.getColor());
         }
 
-        this.children.forEach(child -> child.render(matrixStack, this.absoluteLeft, this.absoluteTop));
+
+        this.children.forEach(child -> child.render(matrixStack, this.absoluteLeft, this.width,
+                this.absoluteTop, this.height
+        ));
     }
 
-    public void addChild(GUIBox child)
+    public GUIBox child(GUIBox child)
     {
         this.children.add(child);
+        return this;
     }
 
-    @Value
-    public static class MouseContext
+    public GUIBox removeChild(GUIBox child)
     {
-        GUIBox item;
-        int x;
-        int y;
-        int button;
-
-        public boolean isLeftClick()
-        {
-            return this.button == 0;
-        }
-
-        public boolean isRightClick()
-        {
-            return this.button == 1;
-        }
-
-        public boolean isMiddleClick()
-        {
-            return this.button == 2;
-        }
+        this.children.remove(child);
+        return this;
     }
+
+    public GUIBox onClick(Consumer<MouseContext> listener)
+    {
+        this.onClickListeners.add(listener);
+        return this;
+    }
+
+    public GUIBox onHover(Consumer<MouseContext> listener)
+    {
+        this.onHoverListeners.add(listener);
+        return this;
+    }
+
+    public GUIBox align(VerticalAlign alignVertical)
+    {
+        this.verticalAlign = alignVertical;
+        return this;
+    }
+
+    public GUIBox text(String text)
+    {
+        this.text = new Text(text);
+        return this;
+    }
+
+    public GUIBox text(Text text)
+    {
+        this.text = text;
+        return this;
+    }
+
+    public GUIBox align(HorizontalAlign alignHorizontal)
+    {
+        this.horizontalAlign = alignHorizontal;
+        return this;
+    }
+
 }

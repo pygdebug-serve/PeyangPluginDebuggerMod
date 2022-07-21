@@ -59,7 +59,7 @@ public class Palette
 
     public static void drawText(MatrixStack stack, String text, int x, int y, int color)
     {
-        RENDERER.drawStringWithShadow(stack, text, x, y, color);
+        RENDERER.drawString(stack, text, x, y, color);
     }
 
     public static void drawTextShadow(MatrixStack stack, String text, int x, int y)
@@ -69,7 +69,7 @@ public class Palette
 
     public static void drawTextShadow(MatrixStack stack, String text, int x, int y, int color)
     {
-        RENDERER.drawString(stack, text, x, y, color);
+        RENDERER.drawStringWithShadow(stack, text, x, y, color);
     }
 
     public static void drawTextCenter(MatrixStack stack, String text, int x, int y, int rectWidth)

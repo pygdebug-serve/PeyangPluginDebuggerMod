@@ -11,6 +11,11 @@ import tokyo.peya.mod.peyangplugindebuggermod.events.TickEventHandler;
 import tokyo.peya.mod.peyangplugindebuggermod.packet.handlers.debugger.DebuggerGeneralHandler;
 import tokyo.peya.mod.peyangplugindebuggermod.packet.handlers.main.PacketInformationHandler;
 import tokyo.peya.mod.peyangplugindebuggermod.packet.handlers.main.PacketPygDebugAvailableHandler;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.GUIBox;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.GUIManager;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.HorizontalAlign;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.Text;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.VerticalAlign;
 
 @Mod("peyangplugindebuggermod")
 public class PeyangPluginDebuggerMod
@@ -24,7 +29,7 @@ public class PeyangPluginDebuggerMod
     public final PacketIO debugChannel;
     public final DebugClient debugger;
 
-    private final DebuggerUI debuggerUI;
+    private final GUIManager guiManager;
 
     public PeyangPluginDebuggerMod()
     {
@@ -44,21 +49,32 @@ public class PeyangPluginDebuggerMod
 
         this.debugChannel.registerHandler(new DebuggerGeneralHandler(this.debugger));
 
-        this.debuggerUI = new DebuggerUI(this.debugger);
+        this.guiManager = new GUIManager(this.debugger);
 
-    }
-
-    @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent.Post event)
-    {
-        if (event.getType() != RenderGameOverlayEvent.ElementType.CROSSHAIRS)
-            return;
-
-        this.debuggerUI.render(event.getMatrixStack());
+        this.initGUI();
     }
 
     public void pollServerInformation(PacketInformationRequest.Action action)
     {
         this.mainChannel.sendPacket(new PacketInformationRequest(action));
+    }
+
+    private void initGUI()
+    {
+
+        GUIBox box = new GUIBox(this.guiManager)
+                .x(20)
+                .y(20)
+                .width(40)
+                .height(40)
+                .align(HorizontalAlign.RIGHT)
+                .align(VerticalAlign.BOTTOM)
+                .text(Text.builder()
+                        .text("Test")
+                        .align(HorizontalAlign.RIGHT)
+                        .align(VerticalAlign.CENTER)
+                        .build());
+
+        this.guiManager.bind(box);
     }
 }

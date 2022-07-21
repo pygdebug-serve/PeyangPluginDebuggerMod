@@ -1,20 +1,16 @@
 package tokyo.peya.mod.peyangplugindebuggermod.ui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 public interface IOverlay
 {
-    int getTop();
-    int getLeft();
+    int getY();
+    int getX();
 
-    int getRight();
-    int getBottom();
+    int getWidth();
+    int getHeight();
 
-    default int getWidth()
-    {
-        return getRight() - getLeft();
-    }
+    void render(MatrixStack stack, int parentLeft, int parentRight, int parentTop, int parentBottom);
 
-    default int getHeight()
-    {
-        return getBottom() - getTop();
-    }
+    void onClicked(MouseContext context);
 }
