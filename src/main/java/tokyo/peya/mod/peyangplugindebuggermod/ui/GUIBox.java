@@ -122,7 +122,7 @@ public class GUIBox implements IOverlay
         if (horizontalAlign == HorizontalAlign.LEFT)
             this.absoluteLeft = parentX + this.x;
         else if (horizontalAlign == HorizontalAlign.CENTER)
-            this.absoluteLeft = parentX + this.x + this.width / 2;
+            this.absoluteLeft = parentX + this.x + (parentWidth - this.width) / 2;
         else if (horizontalAlign == HorizontalAlign.RIGHT)
             this.absoluteLeft = parentX + parentWidth - this.x - this.width;
         else
@@ -131,7 +131,7 @@ public class GUIBox implements IOverlay
         if (verticalAlign == VerticalAlign.TOP)
             this.absoluteTop = parentY + this.y;
         else if (verticalAlign == VerticalAlign.CENTER)
-            this.absoluteTop = parentY + this.y + this.height / 2;
+            this.absoluteTop = parentY + this.y + (parentHeight - this.height) / 2;
         else if (verticalAlign == VerticalAlign.BOTTOM)
             this.absoluteTop = parentY + parentHeight - this.y - this.height;
         else
