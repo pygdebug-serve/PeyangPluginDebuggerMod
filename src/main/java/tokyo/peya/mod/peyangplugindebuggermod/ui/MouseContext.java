@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 public class MouseContext
 {
     @Nullable
-    IOverlay parent;
+    IGUI parent;
     int relativeX;
     int relativeY;
 
@@ -18,7 +18,7 @@ public class MouseContext
     boolean isRightClicking;
     boolean isMiddleClicking;
 
-    public MouseContext changeParent(IOverlay parent)
+    public MouseContext changeParent(IGUI parent)
     {
         return new MouseContext(parent, this.relativeX, this.relativeY, this.wheel, this.isLeftClicking, this.isRightClicking, this.isMiddleClicking);
     }

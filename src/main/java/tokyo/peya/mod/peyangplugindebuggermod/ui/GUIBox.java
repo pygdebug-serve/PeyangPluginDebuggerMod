@@ -7,20 +7,16 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.java.games.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Data
 @Accessors(fluent = true, chain = true)
 @AllArgsConstructor
-public class GUIBox implements IOverlay
+public class GUIBox implements IGUI
 {
-    private final GUIManager guiManager;
-
     private final List<GUIBox> children;
 
     private final List<Consumer<MouseContext>> onClickListeners;
@@ -50,17 +46,17 @@ public class GUIBox implements IOverlay
     @Setter(AccessLevel.PRIVATE)
     private HorizontalAlign horizontalAlign;
 
-    public GUIBox(GUIManager manager, GUIBox source)
+    public GUIBox(GUIBox source)
     {
-        this(manager, source.children, source.onClickListeners, source.onHoverListeners, source.y, source.x, source.width,
+        this(source.children, source.onClickListeners, source.onHoverListeners, source.y, source.x, source.width,
                 source.height, source.absoluteTop, source.absoluteLeft, source.color, source.text, source.visible,
                 source.transparent, source.verticalAlign, source.horizontalAlign
         );
     }
 
-    public GUIBox(GUIManager manager)
+    public GUIBox()
     {
-        this(manager, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0, 0, 0,
+        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0, 0, 0,
                 0, 0, 0, -1946157056, null, true, false,
                 VerticalAlign.TOP, HorizontalAlign.LEFT);
     }

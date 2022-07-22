@@ -2,12 +2,13 @@ package tokyo.peya.mod.peyangplugindebuggermod.debugger;
 
 import lombok.Getter;
 import lombok.Setter;
-import tokyo.peya.lib.pygdebug.common.debugger.DebuggerOption;
+import tokyo.peya.lib.pygdebug.common.config.DebuggerOption;
 import tokyo.peya.lib.pygdebug.common.packets.debug.PacketDebugOptionRequest;
-import tokyo.peya.lib.pygdebug.common.packets.main.PacketInformationRequest;
 import tokyo.peya.lib.pygdebug.common.packets.main.PacketPlatformInformation;
 import tokyo.peya.lib.pygdebug.common.packets.main.PacketServerStatus;
 import tokyo.peya.mod.peyangplugindebuggermod.PacketIO;
+import tokyo.peya.mod.peyangplugindebuggermod.PeyangPluginDebuggerMod;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.KeyBindings;
 
 @Getter
 public class DebugClient
@@ -16,7 +17,7 @@ public class DebugClient
 
     private boolean enabled;
 
-    @Setter
+
     private DebuggerOption debuggerOption;
 
     @Setter
@@ -27,6 +28,7 @@ public class DebugClient
     public DebugClient(PacketIO debugChannel)
     {
         this.debugChannel = debugChannel;
+
         this.debuggerOption = new DebuggerOption();
 
         this.platformInformation = null;
@@ -46,15 +48,27 @@ public class DebugClient
         this.requestFetchDebuggerOption();
 
         this.enabled = true;
+
+        PeyangPluginDebuggerMod.INSTANCE.getDebugGuiManager().setOverlayEnabled(true);
     }
 
     public void dispose()
     {
         System.out.println("disposing DebugClient...");
+
+        PeyangPluginDebuggerMod.INSTANCE.getDebugGuiManager().setOverlayEnabled(false);
+
         this.debuggerOption = new DebuggerOption();
         this.platformInformation = null;
         this.serverStatus = null;
 
         this.enabled = false;
+    }
+
+    public void setDebuggerOption(DebuggerOption debuggerOption)
+    {
+        this.debuggerOption = debuggerOption;
+
+        KeyBindings.updateKeys(debuggerOption.getClientConfig());
     }
 }

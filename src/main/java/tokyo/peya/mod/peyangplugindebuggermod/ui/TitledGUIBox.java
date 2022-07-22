@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import tokyo.peya.mod.peyangplugindebuggermod.DebugGUIManager;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,23 +29,23 @@ public class TitledGUIBox extends GUIBox
                 .align(VerticalAlign.CENTER).build();
     }
 
-    public TitledGUIBox(GUIManager guiManager, List<GUIBox> children, List<Consumer<MouseContext>> onClickListeners, List<Consumer<MouseContext>> onHoverListeners, int y, int x, int width, int height, int absoluteTop, int absoluteLeft, int color, Text text, boolean visible, boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
+    public TitledGUIBox(List<GUIBox> children, List<Consumer<MouseContext>> onClickListeners, List<Consumer<MouseContext>> onHoverListeners, int y, int x, int width, int height, int absoluteTop, int absoluteLeft, int color, Text text, boolean visible, boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
     {
-        super(guiManager, children, onClickListeners, onHoverListeners, y, x, width, height, absoluteTop, absoluteLeft, color, text, visible, transparent, verticalAlign, horizontalAlign);
+        super(children, onClickListeners, onHoverListeners, y, x, width, height, absoluteTop, absoluteLeft, color, text, visible, transparent, verticalAlign, horizontalAlign);
 
 
     }
 
-    public TitledGUIBox(GUIManager manager, GUIBox source)
+    public TitledGUIBox(GUIBox source)
     {
-        super(manager, source);
+        super(source);
 
 
     }
 
-    public TitledGUIBox(GUIManager manager)
+    public TitledGUIBox()
     {
-        super(manager);
+        super();
     }
 
 

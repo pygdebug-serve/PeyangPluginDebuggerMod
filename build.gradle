@@ -128,7 +128,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
-    implementation 'com.github.pygdebug-serve:Common:c7d7a427c1'
+    implementation 'com.github.pygdebug-serve:Common:96f5eeaff1'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'

@@ -2,7 +2,7 @@ package tokyo.peya.mod.peyangplugindebuggermod.ui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-public interface IOverlay
+public interface IGUI
 {
     int getY();
     int getX();
