@@ -6,41 +6,35 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.DecoratedGUIBox;
-import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.animations.Animation;
-
+import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.animations.AnimationBase;
 
 @Getter
 @Setter
 @Accessors(fluent = true, chain = true)
 public class AnimatedGUIBox extends DecoratedGUIBox
 {
+    @Setter
     private boolean autoStart;
 
-    @Setter(AccessLevel.NONE)
-    private Animation startAnimation;  // Implicitly final
-    @Setter(AccessLevel.NONE)
-    private Animation idleAnimation;  // Implicitly final
-    @Setter(AccessLevel.NONE)
-    private Animation endAnimation;  // Implicitly final
+    private AnimationBase startAnimation;  // Implicitly final
+    private AnimationBase idleAnimation;  // Implicitly final
+    private AnimationBase endAnimation;  // Implicitly final
 
-    private Animation onMouseDownAnimation;
-    private Animation onMouseUpAnimation;
+    private AnimationBase onMouseDownAnimation;  // Implicitly final
+    private AnimationBase onMouseUpAnimation;  // Implicitly final
 
-    private Animation onMouseOverAnimation;
-    private Animation onMouseOutAnimation;
+    private AnimationBase onMouseOverAnimation;  // Implicitly final
+    private AnimationBase onMouseOutAnimation;  // Implicitly final
 
-    @Setter(AccessLevel.NONE)
     private boolean started;
-    @Setter(AccessLevel.NONE)
     long ticksElapsed;
-    @Setter(AccessLevel.NONE)
-    private Animation currentAnimation;
+    private AnimationBase currentAnimation;
 
     // For on same mouse action
     private long ticksElapsedBackup;
-    private Animation currentAnimationBackup;
+    private AnimationBase currentAnimationBackup;
 
-    public AnimatedGUIBox startAnimation(Animation startAnimation, boolean autoCalibration)
+    public AnimatedGUIBox onStarted(AnimationBase startAnimation, boolean autoCalibration)
     {
         if (this.startAnimation != null)
             throw new IllegalStateException("startAnimation is already set");
@@ -53,7 +47,7 @@ public class AnimatedGUIBox extends DecoratedGUIBox
         return this;
     }
     
-    public AnimatedGUIBox idleAnimation(Animation idleAnimation, boolean autoCalibration)
+    public AnimatedGUIBox onIdling(AnimationBase idleAnimation, boolean autoCalibration)
     {
         if (this.idleAnimation != null)
             throw new IllegalStateException("idleAnimation is already set");
@@ -71,7 +65,7 @@ public class AnimatedGUIBox extends DecoratedGUIBox
         return this;
     }
     
-    public AnimatedGUIBox endAnimation(Animation endAnimation, boolean autoCalibration)
+    public AnimatedGUIBox onEnded(AnimationBase endAnimation, boolean autoCalibration)
     {
         if (this.endAnimation != null)
             throw new IllegalStateException("endAnimation is already set");
@@ -84,19 +78,59 @@ public class AnimatedGUIBox extends DecoratedGUIBox
         return this;
     }
 
-    public AnimatedGUIBox startAnimation(Animation startAnimation)
+    public AnimatedGUIBox onStarted(AnimationBase startAnimation)
     {
-        return startAnimation(startAnimation, true);
+        return this.onStarted(startAnimation, true);
     }
 
-    public AnimatedGUIBox idleAnimation(Animation idleAnimation)
+    public AnimatedGUIBox onIdling(AnimationBase idleAnimation)
     {
-        return idleAnimation(idleAnimation, true);
+        return this.onIdling(idleAnimation, true);
     }
 
-    public AnimatedGUIBox endAnimation(Animation endAnimation)
+    public AnimatedGUIBox onEnded(AnimationBase endAnimation)
     {
-        return endAnimation(endAnimation, true);
+        return this.onEnded(endAnimation, true);
+    }
+
+    public AnimatedGUIBox onMouseDown(AnimationBase onMouseDownAnimation)
+    {
+        if (this.onMouseDownAnimation != null)
+            throw new IllegalStateException("onMouseDownAnimation is already set");
+
+        this.onMouseDownAnimation = onMouseDownAnimation;
+
+        return this;
+    }
+
+    public AnimatedGUIBox onMouseUp(AnimationBase onMouseUpAnimation)
+    {
+        if (this.onMouseUpAnimation != null)
+            throw new IllegalStateException("onMouseUpAnimation is already set");
+
+        this.onMouseUpAnimation = onMouseUpAnimation;
+
+        return this;
+    }
+
+    public AnimatedGUIBox onMouseOver(AnimationBase onMouseOverAnimation)
+    {
+        if (this.onMouseOverAnimation != null)
+            throw new IllegalStateException("onMouseOverAnimation is already set");
+
+        this.onMouseOverAnimation = onMouseOverAnimation;
+
+        return this;
+    }
+
+    public AnimatedGUIBox onMouseOut(AnimationBase onMouseOutAnimation)
+    {
+        if (this.onMouseOutAnimation != null)
+            throw new IllegalStateException("onMouseOutAnimation is already set");
+
+        this.onMouseOutAnimation = onMouseOutAnimation;
+
+        return this;
     }
 
     public void start()
@@ -122,21 +156,21 @@ public class AnimatedGUIBox extends DecoratedGUIBox
         this.started = false;
 
         if (runEnded && this.currentAnimation != null)
-            this.currentAnimation.onEnded(this);
+            this.currentAnimation.onEnded();
 
         this.currentAnimation = null;
     }
 
-    private void setCurrentAnimation(Animation animation)
+    private void setCurrentAnimation(AnimationBase animation)
     {
         if (this.currentAnimation != null)
-            this.currentAnimation.onEnded(this);
+            this.currentAnimation.onEnded();
 
         this.ticksElapsed = 0;
 
         this.currentAnimation = animation;
 
-        this.currentAnimation.onStarted(this);
+        this.currentAnimation.onStarted();
     }
 
     @Override
@@ -147,8 +181,7 @@ public class AnimatedGUIBox extends DecoratedGUIBox
         if (this.started)
         {
             this.ticksElapsed++;
-            this.currentAnimation.onTick(matrixStack, parentX, parentWidth, parentY, parentHeight, this,
-                    this.ticksElapsed);
+            this.currentAnimation.onTick(matrixStack, parentX, parentWidth, parentY, parentHeight, this.ticksElapsed);
         }
 
         super.render(matrixStack, parentX, parentWidth, parentY, parentHeight);
@@ -178,21 +211,23 @@ public class AnimatedGUIBox extends DecoratedGUIBox
 
     private void passMouseCondition()
     {
-        this.passMouseCondition$1(this.mouseDown(), this.onMouseDownAnimation);
-        this.passMouseCondition$1(this.mouseOver(), this.onMouseUpAnimation);
+        this.passMouseCondition$1(this.mouseDown(), this.onMouseDownAnimation, this.onMouseUpAnimation);
+        this.passMouseCondition$1(this.mouseOver(), this.onMouseOverAnimation, this.onMouseOutAnimation);
     }
 
-    private void passMouseCondition$1(boolean flag, Animation targetAnimation)
+    private void passMouseCondition$1(boolean flag, AnimationBase targetAnimation, AnimationBase invertedTargetAnimation)
     {
         if (flag)
         {
             if (!(this.currentAnimation == targetAnimation || targetAnimation == null))
             {
-                this.currentAnimationBackup();
+                this.makeConditionsBackup();
                 this.setCurrentAnimation(targetAnimation);
             }
         }
         else if (this.currentAnimation == targetAnimation)
+            this.setCurrentAnimation(invertedTargetAnimation);
+        else if (this.currentAnimation == invertedTargetAnimation)
             this.restoreConditionsFromBackup();
     }
 }
