@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.DecoratedGUIBox;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.GUIBox;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.animations.AnimationBase;
 
 @Getter
@@ -13,9 +14,6 @@ import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.animations.Animation
 @Accessors(fluent = true, chain = true)
 public class AnimatedGUIBox extends DecoratedGUIBox
 {
-    @Setter
-    private boolean autoStart;
-
     private AnimationBase startAnimation;  // Implicitly final
     private AnimationBase idleAnimation;  // Implicitly final
     private AnimationBase endAnimation;  // Implicitly final
@@ -26,13 +24,22 @@ public class AnimatedGUIBox extends DecoratedGUIBox
     private AnimationBase onMouseOverAnimation;  // Implicitly final
     private AnimationBase onMouseOutAnimation;  // Implicitly final
 
+    @Setter(AccessLevel.NONE)
+    private boolean isEverStarted;
     private boolean started;
     long ticksElapsed;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private AnimationBase currentAnimation;
 
     // For on same mouse action
     private long ticksElapsedBackup;
     private AnimationBase currentAnimationBackup;
+
+    public AnimatedGUIBox(GUIBox source)
+    {
+        super(source);
+    }
 
     public AnimatedGUIBox onStarted(AnimationBase startAnimation, boolean autoCalibration)
     {
@@ -145,10 +152,18 @@ public class AnimatedGUIBox extends DecoratedGUIBox
 
     public void stop()
     {
+        this.isEverStarted = false;
+
         if (!this.started)
             return;
 
         setCurrentAnimation(this.endAnimation);
+
+        this.children().forEach(child -> {
+            if (child instanceof AnimatedGUIBox)
+                ((AnimatedGUIBox) child).stop();
+        });
+
     }
 
     public void forceStop(boolean runEnded)
@@ -183,16 +198,33 @@ public class AnimatedGUIBox extends DecoratedGUIBox
             this.ticksElapsed++;
             this.currentAnimation.onTick(matrixStack, parentX, parentWidth, parentY, parentHeight, this.ticksElapsed);
         }
+        else if (!this.isEverStarted)
+        {
+            this.isEverStarted = true;
+            this.start();
+            return;
+        }
 
         super.render(matrixStack, parentX, parentWidth, parentY, parentHeight);
 
         if (this.started && this.currentAnimation.isFinished(this.ticksElapsed))
         {
             if (this.currentAnimation == this.startAnimation)
-                setCurrentAnimation(this.idleAnimation);
+            {
+                if (this.idleAnimation != null)
+                    setCurrentAnimation(this.idleAnimation);
+
+                this.currentAnimation = null;
+            }
             else if (this.currentAnimation == this.idleAnimation)
-                setCurrentAnimation(this.endAnimation);
-            else if (this.currentAnimation == this.endAnimation)
+            {
+                if (this.endAnimation != null)
+                    setCurrentAnimation(this.endAnimation);
+
+                this.currentAnimation = null;
+            }
+
+            if (this.currentAnimation == null ||this.currentAnimation == this.endAnimation)
                 this.started = false;
         }
     }
@@ -225,9 +257,9 @@ public class AnimatedGUIBox extends DecoratedGUIBox
                 this.setCurrentAnimation(targetAnimation);
             }
         }
-        else if (this.currentAnimation == targetAnimation)
+        else if (this.currentAnimation != null && this.currentAnimation == targetAnimation)
             this.setCurrentAnimation(invertedTargetAnimation);
-        else if (this.currentAnimation == invertedTargetAnimation)
+        else if (this.currentAnimation != null && this.currentAnimation == invertedTargetAnimation)
             this.restoreConditionsFromBackup();
     }
 }

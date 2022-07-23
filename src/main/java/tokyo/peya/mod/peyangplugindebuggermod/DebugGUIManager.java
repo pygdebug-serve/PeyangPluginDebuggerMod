@@ -16,6 +16,7 @@ import tokyo.peya.mod.peyangplugindebuggermod.debugger.DebugClient;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.IGUI;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.KeyBindings;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.MouseContext;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.AnimatedGUIBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,6 @@ public class DebugGUIManager extends Screen
     private final MainWindow window;
     private final DebugClient debugClient;
 
-    @Setter
     private boolean overlayEnabled;
 
     private int mouseX;
@@ -148,5 +148,15 @@ public class DebugGUIManager extends Screen
                 this.closeScreen();
         }
 
+    }
+
+    public void setOverlayEnabled(boolean overlayEnabled)
+    {
+        if (this.overlayEnabled && !overlayEnabled)
+            this.bindings.forEach(overlay -> {
+                if (overlay instanceof AnimatedGUIBox)
+                    ((AnimatedGUIBox) overlay).stop();
+            });
+        this.overlayEnabled = overlayEnabled;
     }
 }

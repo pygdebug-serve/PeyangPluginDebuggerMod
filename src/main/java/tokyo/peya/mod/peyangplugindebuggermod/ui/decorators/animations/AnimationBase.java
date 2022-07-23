@@ -13,13 +13,10 @@ public abstract class AnimationBase
     private int toX;
     private int toY;
 
-    private GUIBox box;
+    private final GUIBox box;
 
-    public void setBox(GUIBox box)
+    public AnimationBase(GUIBox box)
     {
-        if (this.box != null)
-            throw new IllegalStateException("box is already set");
-
         this.box = box;
     }
 
