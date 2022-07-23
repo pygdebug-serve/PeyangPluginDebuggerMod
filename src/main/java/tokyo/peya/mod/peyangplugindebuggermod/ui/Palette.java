@@ -1,9 +1,12 @@
 package tokyo.peya.mod.peyangplugindebuggermod.ui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.Color;
 
@@ -79,12 +82,19 @@ public class Palette
         drawText(stack, text, textX, y, rgba(255, 255, 255, 255));
     }
 
-    public static void drawTextCenter(MatrixStack stack, String etxt, int x, int y, int rectWidth, int rectHeight, int color)
+    public static void drawTextCenter(MatrixStack stack, String text, int x, int y, int rectWidth, int rectHeight, int color)
     {
-        int textWidth = calcStringWidth(etxt);
+        int textWidth = calcStringWidth(text);
         int textX = x + (rectWidth - textWidth) / 2;
         int textY = y + (rectHeight - FONT_HEIGHT) / 2;
-        drawText(stack, etxt, textX, textY, color);
+        drawText(stack, text, textX, textY, color);
     }
 
+    public static void drawScaledText(MatrixStack stack, String text, int x, int y, float scale, int color)
+    {
+        stack.push();
+        stack.scale(scale, scale, scale);
+
+        drawTextShadow(stack, text, x, y, color);
+    }
 }

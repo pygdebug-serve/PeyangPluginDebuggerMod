@@ -1,7 +1,6 @@
 package tokyo.peya.mod.peyangplugindebuggermod.ui;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 import lombok.Value;
@@ -15,6 +14,8 @@ public class Text
     int relativeX;
     int relativeY;
 
+    double scale;
+
     int color;
 
     boolean shadow;
@@ -24,11 +25,12 @@ public class Text
 
     int width;
 
-    public Text(String text, int relativeX, int relativeY, int color, boolean shadow, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign)
+    public Text(String text, int relativeX, int relativeY, double scale, int color, boolean shadow, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign)
     {
         this.text = text;
         this.relativeX = relativeX;
         this.relativeY = relativeY;
+        this.scale = scale;
         this.color = color;
         this.shadow = shadow;
         this.horizontalAlign = horizontalAlign;
@@ -39,7 +41,7 @@ public class Text
 
     public Text (String text)
     {
-        this(text, 0, 0, 0xFFFFFF, false, HorizontalAlign.LEFT, VerticalAlign.TOP);
+        this(text, 0, 0, 1, 0xFFFFFF, false, HorizontalAlign.LEFT, VerticalAlign.TOP);
     }
 
 
@@ -90,6 +92,8 @@ public class Text
         private int color;
         private boolean shadow;
 
+        private double scale;
+
         @Setter(AccessLevel.NONE)
         private HorizontalAlign horizontalAlign;
         @Setter(AccessLevel.NONE)
@@ -102,6 +106,7 @@ public class Text
             this.posY = 0;
             this.color = 0xFFFFFF;
             this.shadow = false;
+            this.scale = 1;
             this.horizontalAlign = HorizontalAlign.LEFT;
             this.verticalAlign = VerticalAlign.TOP;
         }
@@ -120,7 +125,7 @@ public class Text
 
         public Text build()
         {
-            return new Text(this.text, this.posX, this.posY, this.color, this.shadow, this.horizontalAlign,
+            return new Text(this.text, this.posX, this.posY, this.scale, this.color, this.shadow, this.horizontalAlign,
                     this.verticalAlign);
         }
     }

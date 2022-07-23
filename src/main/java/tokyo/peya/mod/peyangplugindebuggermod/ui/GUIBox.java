@@ -21,8 +21,6 @@ public class GUIBox implements IGUI
 
     private final List<Consumer<MouseContext>> onClickListeners;
 
-    private final List<Consumer<MouseContext>> onHoverListeners;
-
     private int x;
     private int y;
     private int width;
@@ -46,11 +44,14 @@ public class GUIBox implements IGUI
     @Setter(AccessLevel.PRIVATE)
     private HorizontalAlign horizontalAlign;
 
+    private boolean mouseOver;
+    private boolean mouseDown;
+
     public GUIBox()
     {
-        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0, 0, 0,
+        this(new ArrayList<>(), new ArrayList<>(), 0, 0, 0,
                 0, 0, 0, -1946157056, null, true, false,
-                VerticalAlign.TOP, HorizontalAlign.LEFT);
+                VerticalAlign.TOP, HorizontalAlign.LEFT, false, false);
     }
 
     @Override
@@ -164,12 +165,6 @@ public class GUIBox implements IGUI
     public GUIBox onClick(Consumer<MouseContext> listener)
     {
         this.onClickListeners.add(listener);
-        return this;
-    }
-
-    public GUIBox onHover(Consumer<MouseContext> listener)
-    {
-        this.onHoverListeners.add(listener);
         return this;
     }
 

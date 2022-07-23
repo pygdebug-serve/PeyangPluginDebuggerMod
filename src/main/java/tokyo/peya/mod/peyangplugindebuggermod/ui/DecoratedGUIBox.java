@@ -20,7 +20,7 @@ public class DecoratedGUIBox extends GUIBox
     }
 
     public DecoratedGUIBox(List<? extends GUIBox> children, List<? extends Consumer<MouseContext>> onClickListeners,
-                           List<? extends Consumer<MouseContext>> onHoverListeners, int x, int y, int width, int height,
+                           int x, int y, int width, int height,
                            int absoluteTop, int absoluteLeft, int color, Text text, boolean visible,
                            boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
     {
@@ -28,7 +28,6 @@ public class DecoratedGUIBox extends GUIBox
 
         children.forEach(src::child);
         onClickListeners.forEach(src::onClick);
-        onHoverListeners.forEach(src::onHover);
 
         src.x(x);
         src.y(y);
@@ -62,12 +61,6 @@ public class DecoratedGUIBox extends GUIBox
     public List<Consumer<MouseContext>> onClickListeners()
     {
         return this.source.onClickListeners();
-    }
-
-    @Override
-    public List<Consumer<MouseContext>> onHoverListeners()
-    {
-        return this.source.onHoverListeners();
     }
 
     @Override
@@ -289,13 +282,6 @@ public class DecoratedGUIBox extends GUIBox
     }
 
     @Override
-    public GUIBox onHover(Consumer<MouseContext> listener)
-    {
-        this.source.onHover(listener);
-        return this;
-    }
-
-    @Override
     public GUIBox align(VerticalAlign alignVertical)
     {
         this.source.align(alignVertical);
@@ -320,6 +306,32 @@ public class DecoratedGUIBox extends GUIBox
     public GUIBox align(HorizontalAlign alignHorizontal)
     {
         this.source.align(alignHorizontal);
+        return this;
+    }
+
+    @Override
+    public boolean mouseOver()
+    {
+        return this.source.mouseOver();
+    }
+
+    @Override
+    public boolean mouseDown()
+    {
+        return this.source.mouseDown();
+    }
+
+    @Override
+    public GUIBox mouseOver(boolean mouseOver)
+    {
+        this.source.mouseOver(mouseOver);
+        return this;
+    }
+
+    @Override
+    public GUIBox mouseDown(boolean mouseDown)
+    {
+        this.source.mouseDown(mouseDown);
         return this;
     }
 }

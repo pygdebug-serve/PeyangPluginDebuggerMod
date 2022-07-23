@@ -44,9 +44,9 @@ public class TitledGUIBox extends DecoratedGUIBox
         super(source);
     }
 
-    public TitledGUIBox(List<? extends GUIBox> children, List<? extends Consumer<MouseContext>> onClickListeners, List<? extends Consumer<MouseContext>> onHoverListeners, int x, int y, int width, int height, int absoluteTop, int absoluteLeft, int color, Text text, boolean visible, boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
+    public TitledGUIBox(List<? extends GUIBox> children, List<? extends Consumer<MouseContext>> onClickListeners, int x, int y, int width, int height, int absoluteTop, int absoluteLeft, int color, Text text, boolean visible, boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
     {
-        super(children, onClickListeners, onHoverListeners, x, y, width, height, absoluteTop, absoluteLeft, color, text, visible, transparent, verticalAlign, horizontalAlign);
+        super(children, onClickListeners, x, y, width, height, absoluteTop, absoluteLeft, color, text, visible, transparent, verticalAlign, horizontalAlign);
     }
 
     public TitledGUIBox title(Text title)
