@@ -20,7 +20,7 @@ import tokyo.peya.mod.peyangplugindebuggermod.ui.Text;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.VerticalAlign;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.AnimatedGUIBox;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.TitledGUIBox;
-import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.animations.SlideInAnimation;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.animations.SlideAnimation;
 
 @Getter
 @Mod("peyangplugindebuggermod")
@@ -97,8 +97,8 @@ public class PeyangPluginDebuggerMod
                         .text("S"));
 
         box = new AnimatedGUIBox(box)
-                .startAnimation(new SlideInAnimation(box, SlideInAnimation.OutOf.BOTTOM, 20)
-                        .fromOutOfWindow());
+                .startAnimation(new SlideAnimation(box, 20)
+                        .fromOutOfWindow(SlideAnimation.WindowOutOf.RIGHT));
 
 
         this.debugGuiManager.bind(box);

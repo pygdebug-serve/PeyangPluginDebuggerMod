@@ -6,30 +6,28 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.GUIBox;
 
-public class SlideInAnimation extends AnimationBase
+public class SlideAnimation extends AnimationBase
 {
-    private final OutOf fromOutOf;
     private final int speed;  // pixel per 2 ticks
 
     @Builder
-    public SlideInAnimation(GUIBox box, OutOf fromOutOf, int speed)
+    public SlideAnimation(GUIBox box, int speed)
     {
         super(box);
-        this.fromOutOf = fromOutOf;
 
         this.to(box.x(), box.y());
 
         this.speed = speed;
     }
 
-    public AnimationBase fromOutOf(int delta)
+    public AnimationBase fromOutOf(WindowOutOf fromWindowOutOf, int delta)
     {
         GUIBox box = this.getBox();
 
         int fromX;
         int fromY;
 
-        switch (this.fromOutOf)
+        switch (fromWindowOutOf)
         {
             default:
             case RIGHT:
@@ -55,11 +53,52 @@ public class SlideInAnimation extends AnimationBase
         return this;
     }
 
-    public AnimationBase fromOutOfWindow()
+    public AnimationBase fromOutOfWindow(WindowOutOf fromWindowOutOf)
     {
         MainWindow window = Minecraft.getInstance().getMainWindow();
-        return this.fromOutOf(Math.max(window.getScaledHeight(), window.getScaledWidth()));
+        return this.fromOutOf(fromWindowOutOf, Math.max(window.getScaledHeight(), window.getScaledWidth()));
     }
+
+
+    public AnimationBase toOutOf(WindowOutOf toWindowOutOf, int delta)
+    {
+        GUIBox box = this.getBox();
+
+        int toX;
+        int toY;
+
+        switch (toWindowOutOf)
+        {
+            default:
+            case RIGHT:
+                toX = box.getWidth() + delta;
+                toY = box.getY();
+                break;
+            case LEFT:
+                toX = -delta;
+                toY = box.getY();
+                break;
+            case BOTTOM:
+                toX = box.getX();
+                toY = box.getHeight() + delta;
+                break;
+            case TOP:
+                toX = box.getX();
+                toY = -delta;
+                break;
+        }
+
+        super.to(toX, toY);
+
+        return this;
+    }
+
+    public AnimationBase toOutOfWindow(WindowOutOf toWindowOutOf)
+    {
+        MainWindow window = Minecraft.getInstance().getMainWindow();
+        return this.toOutOf(toWindowOutOf, Math.max(window.getScaledHeight(), window.getScaledWidth()));
+    }
+
 
     @Override
     public void onTick(MatrixStack matrixStack, int parentX, int parentWidth, int parentY, int parentHeight, long tick)
@@ -117,7 +156,7 @@ public class SlideInAnimation extends AnimationBase
 
     }
 
-    public enum OutOf
+    public enum WindowOutOf
     {
         RIGHT,
         LEFT,
