@@ -8,7 +8,6 @@ import lombok.Value;
 import lombok.experimental.Accessors;
 
 @Value
-@AllArgsConstructor
 public class Text
 {
     String text;
@@ -22,6 +21,21 @@ public class Text
 
     HorizontalAlign horizontalAlign;
     VerticalAlign verticalAlign;
+
+    int width;
+
+    public Text(String text, int relativeX, int relativeY, int color, boolean shadow, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign)
+    {
+        this.text = text;
+        this.relativeX = relativeX;
+        this.relativeY = relativeY;
+        this.color = color;
+        this.shadow = shadow;
+        this.horizontalAlign = horizontalAlign;
+        this.verticalAlign = verticalAlign;
+
+        this.width = Palette.calcStringWidth(text);
+    }
 
     public Text (String text)
     {

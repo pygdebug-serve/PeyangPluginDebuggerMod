@@ -23,8 +23,8 @@ public class GUIBox implements IGUI
 
     private final List<Consumer<MouseContext>> onHoverListeners;
 
-    private int y;
     private int x;
+    private int y;
     private int width;
     private int height;
 
@@ -45,14 +45,6 @@ public class GUIBox implements IGUI
     private VerticalAlign verticalAlign;
     @Setter(AccessLevel.PRIVATE)
     private HorizontalAlign horizontalAlign;
-
-    public GUIBox(GUIBox source)
-    {
-        this(source.children, source.onClickListeners, source.onHoverListeners, source.y, source.x, source.width,
-                source.height, source.absoluteTop, source.absoluteLeft, source.color, source.text, source.visible,
-                source.transparent, source.verticalAlign, source.horizontalAlign
-        );
-    }
 
     public GUIBox()
     {

@@ -17,8 +17,8 @@ import tokyo.peya.mod.peyangplugindebuggermod.ui.HorizontalAlign;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.KeyBindings;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.Palette;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.Text;
-import tokyo.peya.mod.peyangplugindebuggermod.ui.TitledGUIBox;
 import tokyo.peya.mod.peyangplugindebuggermod.ui.VerticalAlign;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.decorators.TitledGUIBox;
 
 @Getter
 @Mod("peyangplugindebuggermod")

@@ -1,10 +1,16 @@
-package tokyo.peya.mod.peyangplugindebuggermod.ui;
+package tokyo.peya.mod.peyangplugindebuggermod.ui.decorators;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import tokyo.peya.mod.peyangplugindebuggermod.DebugGUIManager;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.DecoratedGUIBox;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.GUIBox;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.HorizontalAlign;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.MouseContext;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.Palette;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.Text;
+import tokyo.peya.mod.peyangplugindebuggermod.ui.VerticalAlign;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -12,7 +18,7 @@ import java.util.function.Consumer;
 @Getter
 @Setter
 @Accessors(fluent = true, chain = true)
-public class TitledGUIBox extends GUIBox
+public class TitledGUIBox extends DecoratedGUIBox
 {
     private static final Text TITLE_DEFAULT_TEXT;
 
@@ -29,25 +35,19 @@ public class TitledGUIBox extends GUIBox
                 .align(VerticalAlign.CENTER).build();
     }
 
-    public TitledGUIBox(List<GUIBox> children, List<Consumer<MouseContext>> onClickListeners, List<Consumer<MouseContext>> onHoverListeners, int y, int x, int width, int height, int absoluteTop, int absoluteLeft, int color, Text text, boolean visible, boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
+    public TitledGUIBox()
     {
-        super(children, onClickListeners, onHoverListeners, y, x, width, height, absoluteTop, absoluteLeft, color, text, visible, transparent, verticalAlign, horizontalAlign);
-
-
     }
 
     public TitledGUIBox(GUIBox source)
     {
         super(source);
-
-
     }
 
-    public TitledGUIBox()
+    public TitledGUIBox(List<? extends GUIBox> children, List<? extends Consumer<MouseContext>> onClickListeners, List<? extends Consumer<MouseContext>> onHoverListeners, int x, int y, int width, int height, int absoluteTop, int absoluteLeft, int color, Text text, boolean visible, boolean transparent, VerticalAlign verticalAlign, HorizontalAlign horizontalAlign)
     {
-        super();
+        super(children, onClickListeners, onHoverListeners, x, y, width, height, absoluteTop, absoluteLeft, color, text, visible, transparent, verticalAlign, horizontalAlign);
     }
-
 
     public TitledGUIBox title(Text title)
     {
